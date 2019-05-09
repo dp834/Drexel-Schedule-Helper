@@ -214,16 +214,16 @@ function runAPI(){
       data = data.replace(/\\"/g, "");
 
       // Parse JSON back and format table
-      data = JSON.parse(data);
-      for (elem in data) {
-        for (times in elem) {
-          data[elem].times = data[elem].times.replace(/y:0/g, "y:");
-          data[elem].times = data[elem].times.replace(/y:/g, 'y: ');
-          data[elem].times = data[elem].times.replace(/{/g, '');
-          data[elem].times = data[elem].times.replace(/}/g, '');
-          data[elem].times = data[elem].times.replace(/,/g, '<br><br>');
-        }
-      }
+      // data = JSON.parse(data);
+      // for (elem in data) {
+        // for (times in elem) {
+          // data[elem].times = data[elem].times.replace(/y:0/g, "y:");
+          // data[elem].times = data[elem].times.replace(/y:/g, 'y: ');
+          // data[elem].times = data[elem].times.replace(/{/g, '');
+          // data[elem].times = data[elem].times.replace(/}/g, '');
+          // data[elem].times = data[elem].times.replace(/,/g, '<br><br>');
+      //   }
+      // }
 
       $('#content').html("");
       $('#tmsTable').show();

@@ -1,7 +1,9 @@
 #! /usr/bin/node
 //sets database properly if run localc vs server
-if(process.env.CLEARDB_DATABASE_URL === undefined){
-	require('dotenv').config();
+if(process.env.GOOGLE_HOST === undefined){
+	// require('dotenv').config();
+	let dotenv = require('dotenv');
+	dotenv.load();
 }
 //using express
 var express = require("express");
@@ -21,8 +23,17 @@ var fs = require("fs");
 
 //connect to mysql database
 var mysql = require("mysql");
+let config = {
+	"connectionLimit": 20,
+	"host": process.env.SQL_HOST,
+	"user": process.env.SQL_USER,
+	"password": process.env.SQL_PASS,
+	"database": process.env.SQL_DB
+}
+
 //using pools
-let pool = mysql.createPool(process.env.CLEARDB_DATABASE_URL);
+let pool = mysql.createPool(config);
+
 //logging purposes
 pool.on('acquire', function (connection) {
   console.log('Connection %d acquired', connection.threadId);
@@ -72,7 +83,7 @@ app.get('/tms', function(req, res) {
 		res.status(400);
 		res.send("No parameters provided");
 	} else {
-		var query = "SELECT * FROM updated_courses WHERE";
+		var query = "SELECT * FROM courses WHERE";
 		var params = [];
 		console.log("TMS Get Request\nParameters Sent: " + JSON.stringify(req.query));
 		if(req.query.term !== undefined) params.push(["term", pool.escape(req.query.term)]);
@@ -88,7 +99,7 @@ app.get('/tms', function(req, res) {
 		if(req.query.instructor !== undefined) params.push(["instructor", pool.escape(req.query.instructor)]);
 
 		for (var i=0; i<params.length; i++) {
-			if (query.length === 35) {
+			if (query.length === 27) {
 				query += " " + params[i][0] + "=" + params[i][1];
 			} else {
 				query += " AND " + params[i][0] + "=" + params[i][1];
@@ -143,7 +154,7 @@ app.post("/render", (req,res)=>{
 //gets all the sections for given courses given the course ie CS 275 and the term ie Spring Quarter 18-19
 app.post("/classes", (req, res)=>{
 	console.log("Entered classes with:\n" + JSON.stringify(req.body));
-	let query = "select * from updated_courses where term=" + pool.escape(req.body.term) + "AND (";
+	let query = "select * from courses where term=" + pool.escape(req.body.term) + "AND (";
 	let coursesRes = [];
 	let map = {};
 	let counter = 0;
@@ -179,7 +190,7 @@ app.post("/classes", (req, res)=>{
 //gets all terms 
 app.get("/allTerms", (req,res)=>{
 	console.log("Entered allTerms");
-	query = "SELECT DISTINCT term FROM updated_courses;";
+	query = "SELECT DISTINCT term FROM courses;";
 	pool.query(query, (err,rows, field)=>{
 		if(err){
 			res.status(200);
@@ -201,7 +212,7 @@ app.get("/allInstructors", (req,res)=>{
 		res.end();
 		return;	
 	}
-	query = 'SELECT DISTINCT instructor as ID from updated_courses where term=' + pool.escape(req.query.term) + ' ORDER BY ID';
+	query = 'SELECT DISTINCT instructor as ID from courses where term=' + pool.escape(req.query.term) + ' ORDER BY ID';
 	pool.query(query,(err,rows,fields)=>{
 		if(err){
 			res.status(200);
@@ -223,7 +234,7 @@ app.get("/allClasses", (req,res)=>{
 		res.end();
 		return;	
 	}
-	query = 'SELECT DISTINCT CONCAT(subject, " ", number) as ID from updated_courses where term=' + pool.escape(req.query.term) + ' ORDER BY ID';
+	query = 'SELECT DISTINCT CONCAT(subject, " ", number) as ID from courses where term=' + pool.escape(req.query.term) + ' ORDER BY ID';
 	pool.query(query,(err,rows,fields)=>{
 		if(err){
 			res.status(200);
@@ -292,7 +303,7 @@ async function pushDataToDatabase(){
 				for (courseLink in allCourses[term].colleges[college].subjects[subject].courseLinks) {
 
 
-					let query = "INSERT INTO updated_courses (term, college, subject, number, type, method, section, crn, title, times, instructor, building, room, campus, credits, enroll, max_enroll, section_comments, textbook, description) VALUES ?";
+					let query = "INSERT INTO courses (term, college, subject, number, type, method, section, crn, title, times, instructor, building, room, campus, credits, enroll, max_enroll, section_comments, textbook, description) VALUES ?";
 					
 					let item = allCourses[term].colleges[college].subjects[subject].courseLinks[courseLink].courses;
 					let temp = [];
