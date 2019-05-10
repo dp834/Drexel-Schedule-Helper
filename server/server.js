@@ -253,6 +253,14 @@ app.get("/allClasses", (req,res)=>{
 });
 
 
+
+app.get("/coursesFile", (req,res)=>{
+	let allCourses = require('../scraper/courses.json');
+	res.json(allCourses);
+	res.end();
+});
+
+
 async function lsExample() {
   const { stdout, stderr } = await exec('cd server ; node ../scraper/scraper.js');
   console.log('stdout:', stdout);
@@ -308,7 +316,8 @@ app.get("/pushDatabase",(req,res)=>{
 async function pushDataToDatabase(){
 	console.log("Entered pushDataToDatabase");
 	let file = __dirname + "/../scraper/courses.json";
-	let allCourses = JSON.parse(fs.readFileSync(file));
+	// let allCourses = JSON.parse(fs.readFileSync(file));
+	let allCourses = require(file);
 	if(allCourses === undefined){
 		console.log("pushDataToDatabase Failed to get courses from file: " + file);
 		return;
@@ -327,34 +336,35 @@ async function pushDataToDatabase(){
 					
 					let item = allCourses[term].colleges[college].subjects[subject].courseLinks[courseLink].courses;
 					let temp = [];
-					temp.push(pool.escape(allCourses[term].name));
-					temp.push(pool.escape(allCourses[term].colleges[college].name));
-					temp.push(pool.escape(item.Subject));
-					temp.push(pool.escape(item.Number));
-					temp.push(pool.escape(item.Type));
-					temp.push(pool.escape(item.Method));
-					temp.push(pool.escape(item.Section));
-					temp.push(pool.escape(item.CRN));
-					temp.push(pool.escape(item.Title));
-					temp.push(pool.escape(JSON.stringify(item.Times)));
-					temp.push(pool.escape(item.Instructor));
-					temp.push(pool.escape(item.Building));
-					temp.push(pool.escape(item.Room));
-					temp.push(pool.escape(item.Campus));
-					temp.push(pool.escape(item.Credits));
-					temp.push(pool.escape(item.Enroll));
-					temp.push(pool.escape(item.Max_Enroll));
-					temp.push(pool.escape(item.Section_Comments));
-					temp.push(pool.escape(item.Textbook));
-					temp.push(pool.escape(item.Description));
+					temp.push(allCourses[term].name);
+					temp.push(allCourses[term].colleges[college].name);
+					temp.push(item.Subject);
+					temp.push(item.Number);
+					temp.push(item.Type);
+					temp.push(item.Method);
+					temp.push(item.Section);
+					temp.push(item.CRN);
+					temp.push(item.Title);
+					temp.push(JSON.stringify(item.Times));
+					temp.push(item.Instructor);
+					temp.push(item.Building);
+					temp.push(item.Room);
+					temp.push(item.Campus);
+					temp.push(item.Credits);
+					temp.push(item.Enroll);
+					temp.push(item.Max_Enroll);
+					temp.push(item.Section_Comments);
+					temp.push(item.Textbook);
+					temp.push(item.Description);
 
 					values.push(temp);
+					// console.log(temp);
 
 					totalRequests++;
 					actualRequests++;		
 
 
-					// Using this stackoverflow -> https://stackoverflow.com/questions/8899802/how-do-i-do-a-bulk-insert-in-mysql-using-node-js
+					Using this stackoverflow -> https://stackoverflow.com/questions/8899802/how-do-i-do-a-bulk-insert-in-mysql-using-node-js
 					pool.query(query, [values], (err,rows,field)=>{
 						if(err && !String(err).includes("ER_DUP_ENTRY")){
 							console.log("Error with query\n" + err);
