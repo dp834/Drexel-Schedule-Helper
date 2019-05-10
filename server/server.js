@@ -8,6 +8,11 @@ if(process.env.GOOGLE_HOST === undefined){
 //using express
 var express = require("express");
 
+const util = require('util');
+const exec = util.promisify(require('child_process').exec);
+
+
+
 var app = express();
 //home path
 app.use(express.static("server/"));
@@ -248,13 +253,38 @@ app.get("/allClasses", (req,res)=>{
 });
 
 
+async function lsExample() {
+  const { stdout, stderr } = await exec('cd server ; node ../scraper/scraper.js');
+  console.log('stdout:', stdout);
+  console.log('stderr:', stderr);
+}
+
 app.get("/runScraper", (req,res)=>{
-	req.setTimeout(0); // Using this -> https://github.com/expressjs/express/issues/2174
-	console.log("Calling runScraper");
+	// lsExample();
+	var exec1 = require('child_process').exec;
+	var scraperProcess = exec1('cd server ; node ../scraper/scraper.js');
+
+	scraperProcess.stdout.on('data', function(data) {
+			console.log(data); 
+	});
+
+	res.end();
+	// req.setTimeout(0); // Using this -> https://github.com/expressjs/express/issues/2174
+	// console.log("Calling runScraper");
+
+
+	// // const exec = require('child_process').exec;
+	// // const child = exec('ls', (error, stdout, stderr) => {
+	// //         console.log(`stdout: ${stdout}`);
+	// //         console.log(`stderr: ${stderr}`);
+	// //         if (error !== null) {
+	// //             console.log(`exec error: ${error}`);
+	// //         }
+	// // });
 
 
 	// const exec = require('child_process').exec;
-	// const child = exec('ls', (error, stdout, stderr) => {
+	// const child = exec('cd server ; node ../scraper/scraper.js', (error, stdout, stderr) => {
 	//         console.log(`stdout: ${stdout}`);
 	//         console.log(`stderr: ${stderr}`);
 	//         if (error !== null) {
@@ -263,18 +293,8 @@ app.get("/runScraper", (req,res)=>{
 	// });
 
 
-	const exec = require('child_process').exec;
-	const child = exec('cd server ; node ../scraper/scraper.js', (error, stdout, stderr) => {
-	        console.log(`stdout: ${stdout}`);
-	        console.log(`stderr: ${stderr}`);
-	        if (error !== null) {
-	            console.log(`exec error: ${error}`);
-	        }
-	});
-
-
-	console.log("Done scraper");
-	res.end();
+	// console.log("Done scraper");
+	// res.end();
 });
 
 app.get("/pushDatabase",(req,res)=>{

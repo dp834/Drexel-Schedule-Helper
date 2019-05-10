@@ -30,7 +30,7 @@ const getTerms = new Promise((resolve, reject)=>{
 			return;
 		});
 		console.log("Success in getTerms()");
-		resolve(termList.slice(0,4));//0,4));//first 4 as they are the ones we care about ie current year
+		resolve(termList.slice(3,4));//0,4));//first 4 as they are the ones we care about ie current year
 	});
 });
 
@@ -134,6 +134,7 @@ async function getCourses(termList){
 		for(let j=0; j<termList[i].colleges.length; j++){
 			for(let k=0; k<termList[i].colleges[j].subjects.length; k++){
 				let link = termList[i].colleges[j].subjects[k].link;
+				console.log(link);
 				// console.log("Getting courses from Link:\n" + link);
 
 				let temp = await getCoursesFromLink(link);
@@ -415,6 +416,8 @@ function extractTime(lines) {
 }
 function saveJSON(termList){
 	let data = JSON.stringify(termList);
+	console.log("\n\n\n\n\n\n\n\nFinal:\n\n\n\n\n\n");
+	console.log(data);
 	//should be called from server which has it's home dir in /server/
 	fs.writeFile('../scraper/courses.json', data, function(err, data){
 	    if (err) console.log(err);
