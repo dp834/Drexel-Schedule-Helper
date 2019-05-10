@@ -364,7 +364,7 @@ async function pushDataToDatabase(){
 					actualRequests++;		
 
 
-					Using this stackoverflow -> https://stackoverflow.com/questions/8899802/how-do-i-do-a-bulk-insert-in-mysql-using-node-js
+					// Using this stackoverflow -> https://stackoverflow.com/questions/8899802/how-do-i-do-a-bulk-insert-in-mysql-using-node-js
 					pool.query(query, [values], (err,rows,field)=>{
 						if(err && !String(err).includes("ER_DUP_ENTRY")){
 							console.log("Error with query\n" + err);
