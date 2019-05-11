@@ -91,17 +91,17 @@ app.get('/tms', function(req, res) {
 		var query = "SELECT * FROM courses WHERE";
 		var params = [];
 		console.log("TMS Get Request\nParameters Sent: " + JSON.stringify(req.query));
-		if(req.query.term !== undefined) params.push(["term", pool.escape(req.query.term)]);
-		if(req.query.college !== undefined) params.push(["college", pool.escape(req.query.college)]);
-		if(req.query.subject !== undefined) params.push(["subject", pool.escape(req.query.subject)]);
-		if(req.query.number !== undefined) params.push(["number", pool.escape(req.query.number)]);
-		if(req.query.type !== undefined) params.push(["type", pool.escape(req.query.type)]);
-		if(req.query.method !== undefined) params.push(["method", pool.escape(req.query.method)]);
-		if(req.query.section !== undefined) params.push(["section", pool.escape(req.query.section)]);
-		if(req.query.crn !== undefined) params.push(["crn", pool.escape(req.query.crn)]);
-		if(req.query.description !== undefined) params.push(["description", pool.escape(req.query.description)]);
-		if(req.query.times !== undefined) params.push(["times", pool.escape(req.query.times)]);
-		if(req.query.instructor !== undefined) params.push(["instructor", pool.escape(req.query.instructor)]);
+		if(req.query.term !== undefined) params.push(["term", addQuotes(pool.escape(req.query.term))]);
+		if(req.query.college !== undefined) params.push(["college", addQuotes(pool.escape(req.query.college))]);
+		if(req.query.subject !== undefined) params.push(["subject", addQuotes(pool.escape(req.query.subject))]);
+		if(req.query.number !== undefined) params.push(["number", addQuotes(pool.escape(req.query.number))]);
+		if(req.query.type !== undefined) params.push(["type", addQuotes(pool.escape(req.query.type))]);
+		if(req.query.method !== undefined) params.push(["method", addQuotes(pool.escape(req.query.method))]);
+		if(req.query.section !== undefined) params.push(["section", addQuotes(pool.escape(req.query.section))]);
+		if(req.query.crn !== undefined) params.push(["crn", addQuotes(pool.escape(req.query.crn))]);
+		if(req.query.description !== undefined) params.push(["description", addQuotes(pool.escape(req.query.description))]);
+		if(req.query.times !== undefined) params.push(["times", addQuotes(pool.escape(req.query.times))]);
+		if(req.query.instructor !== undefined) params.push(["instructor", addQuotes(pool.escape(req.query.instructor))]);
 
 		for (var i=0; i<params.length; i++) {
 			if (query.length === 27) {
@@ -111,8 +111,10 @@ app.get('/tms', function(req, res) {
 			}
 		}
 
+		query += ";";
 		console.log("Query: " + query);
 
+		console.log(query);
 		pool.query(query, (err,rows, field)=>{
 			if(err){
 				res.status(300);
@@ -121,11 +123,21 @@ app.get('/tms', function(req, res) {
 				return;
 			}
 			res.status(200);
-			res.json(rows);
+
+			let temp = replaceAll(rows);
+			res.json(temp);
+			// res.json(rows);
 			res.end();
 		});
 	}
 });
+
+function replaceAll(str) {
+	let find = `\'`;
+	let replace = '';
+	let temp = JSON.stringify(str);
+    return JSON.parse(temp.replace(new RegExp(find, 'g'), replace));
+}
 
 //Used to get resources for dynamic page allocations
 app.post("/render", (req,res)=>{
@@ -159,21 +171,24 @@ app.post("/render", (req,res)=>{
 //gets all the sections for given courses given the course ie CS 275 and the term ie Spring Quarter 18-19
 app.post("/classes", (req, res)=>{
 	console.log("Entered classes with:\n" + JSON.stringify(req.body));
-	let query = "select * from courses where term=" + pool.escape(req.body.term) + "AND (";
+	let query = "select * from courses where term=" + `''` + pool.escape(req.body.term) + `''` + "AND (";
 	let coursesRes = [];
 	let map = {};
 	let counter = 0;
 	for(course in req.body.courses){
+		console.log(course);
 		map[req.body.courses[course]] = counter;
 		coursesRes[counter] = [];
 		counter++;
 		let split = req.body.courses[course].split(" ");
-		query+= "(subject=" + pool.escape(split[0]) + " AND number=" + pool.escape(split[1]) +") OR";
+		query+= "(subject=" + `''` + pool.escape(split[0]) + `''` + " AND number=" + `''` + pool.escape(split[1]) + `''` +") OR";
 	}
 	query = query.slice(0,-2);
 	query += ");"
 
+	console.log(query);
 	pool.query(query, (err,rows,field)=>{
+		console.log(rows);
 		if(err){
 			res.status("200");
 			console.log("Error with Query:" + query);
@@ -182,20 +197,30 @@ app.post("/classes", (req, res)=>{
 			return;
 		}
 		for(row in rows){
-			var pointer = map[rows[row].subject + " " + rows[row].number];
+			var pointer = map[removeQuotes(rows[row].Subject) + " " + removeQuotes(rows[row].number)];
+			console.log("POINTER: " + pointer);
 			if(pointer !== undefined){
 				coursesRes[pointer].push(rows[row]);
 			}
 		}
-		res.write(JSON.stringify(coursesRes));
+		res.write(JSON.stringify(replaceAll(coursesRes)));
 		res.end();	
 	})
 });
+
+function addQuotes(str) {
+	return `''` + str + `''`;
+}
+
+function removeQuotes(str) {
+	return str.substring(1, str.length-1);
+}
 
 //gets all terms 
 app.get("/allTerms", (req,res)=>{
 	console.log("Entered allTerms");
 	query = "SELECT DISTINCT term FROM courses;";
+	console.log(query);
 	pool.query(query, (err,rows, field)=>{
 		if(err){
 			res.status(200);
@@ -203,7 +228,9 @@ app.get("/allTerms", (req,res)=>{
 			res.end();
 			return;
 		}
-		res.json(rows);
+		// res.json(rows);
+		let temp = replaceAll(rows);
+		res.json(temp);
 		res.end();
 	});
 });
@@ -217,7 +244,8 @@ app.get("/allInstructors", (req,res)=>{
 		res.end();
 		return;	
 	}
-	query = 'SELECT DISTINCT instructor as ID from courses where term=' + pool.escape(req.query.term) + ' ORDER BY ID';
+	query = 'SELECT DISTINCT instructor as ID from courses where term=' + `''` + pool.escape(req.query.term) + `''` + ' ORDER BY ID';
+	console.log(query);
 	pool.query(query,(err,rows,fields)=>{
 		if(err){
 			res.status(200);
@@ -225,7 +253,9 @@ app.get("/allInstructors", (req,res)=>{
 			res.end();
 			return;
 		}
-		res.json(rows);
+		// res.json(rows);
+		let temp = replaceAll(rows);
+		res.json(temp);
 		res.end();
 	});
 });
@@ -239,7 +269,8 @@ app.get("/allClasses", (req,res)=>{
 		res.end();
 		return;	
 	}
-	query = 'SELECT DISTINCT CONCAT(subject, " ", number) as ID from courses where term=' + pool.escape(req.query.term) + ' ORDER BY ID';
+	query = 'SELECT DISTINCT CONCAT(subject, " ", number) as ID from courses where term=' + `''` +  pool.escape(req.query.term) + `''` + ' ORDER BY ID';
+	console.log(query);
 	pool.query(query,(err,rows,fields)=>{
 		if(err){
 			res.status(200);
@@ -247,7 +278,9 @@ app.get("/allClasses", (req,res)=>{
 			res.end();
 			return;
 		}
-		res.json(rows);
+		// res.json(rows);
+		let temp = replaceAll(rows);
+		res.json(temp);
 		res.end();
 	});
 });
@@ -332,30 +365,29 @@ async function pushDataToDatabase(){
 				for (courseLink in allCourses[term].colleges[college].subjects[subject].courseLinks) {
 
 
-					let query = "INSERT INTO courses (term, college, subject, number, type, method, section, crn, title, times, instructor, building, room, campus, credits, enroll, max_enroll, section_comments, textbook, description) VALUES ?";
 					
-					let item = allCourses[term].colleges[college].subjects[subject].courseLinks[courseLink].courses;
 					let temp = [];
-					temp.push(allCourses[term].name);
-					temp.push(allCourses[term].colleges[college].name);
-					temp.push(item.Subject);
-					temp.push(item.Number);
-					temp.push(item.Type);
-					temp.push(item.Method);
-					temp.push(item.Section);
-					temp.push(item.CRN);
-					temp.push(item.Title);
-					temp.push(JSON.stringify(item.Times));
-					temp.push(item.Instructor);
-					temp.push(item.Building);
-					temp.push(item.Room);
-					temp.push(item.Campus);
-					temp.push(item.Credits);
-					temp.push(item.Enroll);
-					temp.push(item.Max_Enroll);
-					temp.push(item.Section_Comments);
-					temp.push(item.Textbook);
-					temp.push(item.Description);
+					let item = allCourses[term].colleges[college].subjects[subject].courseLinks[courseLink].courses;
+					temp.push(pool.escape(allCourses[term].name));
+					temp.push(pool.escape(allCourses[term].colleges[college].name));
+					temp.push(pool.escape(item.Subject));
+					temp.push(pool.escape(item.Number));
+					temp.push(pool.escape(item.Type));
+					temp.push(pool.escape(item.Method));
+					temp.push(pool.escape(item.Section));
+					temp.push(pool.escape(item.CRN));
+					temp.push(pool.escape(item.Title));
+					temp.push(pool.escape(JSON.stringify(item.Times)));
+					temp.push(pool.escape(item.Instructor));
+					temp.push(pool.escape(item.Building));
+					temp.push(pool.escape(item.Room));
+					temp.push(pool.escape(item.Campus));
+					temp.push(pool.escape(item.Credits));
+					temp.push(pool.escape(item.Enroll));
+					temp.push(pool.escape(item.Max_Enroll));
+					temp.push(pool.escape(item.Section_Comments));
+					temp.push(pool.escape(item.Textbook));
+					temp.push(pool.escape(item.Description));
 
 					values.push(temp);
 					// console.log(temp);
@@ -364,16 +396,17 @@ async function pushDataToDatabase(){
 					actualRequests++;		
 
 
-					// Using this stackoverflow -> https://stackoverflow.com/questions/8899802/how-do-i-do-a-bulk-insert-in-mysql-using-node-js
-					pool.query(query, [values], (err,rows,field)=>{
-						if(err && !String(err).includes("ER_DUP_ENTRY")){
-							console.log("Error with query\n" + err);
-						}
-					});
 				}
 			}
 		}
 	}
+	let query = "INSERT IGNORE INTO courses (term, college, subject, number, type, method, section, crn, title, times, instructor, building, room, campus, credits, enroll, max_enroll, section_comments, textbook, description) VALUES ?";
+	/* Using this stackoverflow -> https://stackoverflow.com/questions/8899802/how-do-i-do-a-bulk-insert-in-mysql-using-node-js */
+	pool.query(query, [values], (err,rows,field)=>{
+		if(err && !String(err).includes("ER_DUP_ENTRY")){
+			console.log("Error with query\n" + err);
+		}
+	});
 	console.log("totalRequests: " + totalRequests);
 	console.log("actualRequests: " + actualRequests);
 }

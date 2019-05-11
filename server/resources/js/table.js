@@ -203,27 +203,35 @@ function runAPI(){
       // Stringify JSON to format
       var data = JSON.stringify(rows);
     
-      // Replace day abbreviations to full names
-      data = data.replace(/{\\"T\\":\\"TBD\\",\\"B\\":\\"TBD\\",\\"D\\":\\"TBD\\"}/g, "TBD");
-      data = data.replace(/\\"M\\"/g, "Monday");
-      data = data.replace(/\\"T\\"/g, "Tuesday");
-      data = data.replace(/\\"W\\"/g, "Wednesday");
-      data = data.replace(/\\"R\\"/g, "Thursday");
-      data = data.replace(/\\"F\\"/g, "Friday");
-      data = data.replace(/\\"S\\"/g, "Saturday");
-      data = data.replace(/\\"/g, "");
+      data = JSON.parse(data);
 
-      // Parse JSON back and format table
-      // data = JSON.parse(data);
-      // for (elem in data) {
-        // for (times in elem) {
-          // data[elem].times = data[elem].times.replace(/y:0/g, "y:");
-          // data[elem].times = data[elem].times.replace(/y:/g, 'y: ');
-          // data[elem].times = data[elem].times.replace(/{/g, '');
-          // data[elem].times = data[elem].times.replace(/}/g, '');
-          // data[elem].times = data[elem].times.replace(/,/g, '<br><br>');
-      //   }
-      // }
+
+      Loop1:
+      for (let elem of data) {
+        let res = "";
+        elem.Times = JSON.stringify(elem.Times).replace(/\\/g, "");
+        let temp = elem.Times;
+        elem.Times = temp.substring(1, temp.length-1);
+        if (elem.Times.includes(',')) {
+          for (let time of elem.Times.split(',')) {
+            let finalTime = parseTimeOut(time);
+            if (finalTime == "TBD") {
+              elem.Times = finalTime;
+              continue Loop1;
+            }
+            res += finalTime + "\n";
+          }
+        } else {
+          let time = elem.Times;
+          let finalTime = parseTimeOut(time);
+          if (finalTime == "TBD") {
+            elem.Times = finalTime;
+            continue Loop1;
+          }
+          res += finalTime + "\n";
+        }
+        elem.Times = res.substring(0, res.length-1);
+      }
 
       $('#content').html("");
       $('#tmsTable').show();
@@ -238,6 +246,41 @@ function runAPI(){
       });
     }
   })
+}
 
-  console.log($('#tmsTable').html());
+
+function parseTimeOut(time) {
+  let arr = time.split(":");
+  let day = arr[0];
+  day = removeOuter(day);
+
+
+  let actTime = arr.splice(1).join(`:`);
+  actTime = removeOuter(actTime);
+  if (actTime == "TBD") {
+    return "TBD";
+  }
+
+  return getDay(day) + " " + actTime;
+}
+
+function removeOuter(str) {
+  return str.substring(str.indexOf(`"`)+1, str.lastIndexOf(`"`));
+}
+
+function getDay(day) {
+  switch(day) {
+    case "M":
+      return "Monday";
+    case "T":
+      return "Tuesday";
+    case "W":
+      return "Wednesday";
+    case "R":
+      return "Thursday";
+    case "F":
+      return "Friday";
+    case "S":
+      return "Saturday";
+  }
 }
