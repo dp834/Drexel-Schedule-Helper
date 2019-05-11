@@ -126,9 +126,9 @@ function getCRN() {
 	var schedule = allSchedules[indx];
 	for (var j=0; j<schedule.length-1; j++) {
 		var course = schedule[j];
-		$("#crnArea").val($("#crnArea").val() + course.crn + ",\n");	
+		$("#crnArea").val($("#crnArea").val() + course.CRN + ",\n");	
 	}
-	$("#crnArea").val($("#crnArea").val() + allSchedules[indx][allSchedules[indx].length-1].crn);
+	$("#crnArea").val($("#crnArea").val() + allSchedules[indx][allSchedules[indx].length-1].CRN);
 	$(function() {
 	    $('textarea').each(function() {
 	        $(this).height($(this).prop('scrollHeight'));
