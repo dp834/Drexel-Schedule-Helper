@@ -74,7 +74,7 @@ function isValidSchedule(sectionToAdd, schedule){
     // console.log(otherClass.Number + " " + otherClass.Times);
     // console.log(sectionToAdd.Number + " " + sectionToAdd.Times);
     // console.log("\n-----------------------\n")
-    if(overlap(otherClass.Times, sectionToAdd.Times)){
+    if(overlap(otherClass.Times, sectionToAdd.Times) || sectionToAdd.Enroll.toUpperCase() == "CLOSED"){
       return false;
     }
   }
