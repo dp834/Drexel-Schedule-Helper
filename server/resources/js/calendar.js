@@ -9,7 +9,7 @@ function updateEvents(indx) {
 	var courses = allSchedules[indx];
 	for (var j=0; j<courses.length; j++) {
 		var course = courses[j];
-		var times = course.times;
+		var times = parseTimes(course.Times);
 		var online = false;
 		/* If online class set class to show on Monday */
 		if (times['T'] == 'TBD') {
@@ -24,7 +24,7 @@ function updateEvents(indx) {
 			var start = createDate(day, times[day].split("-")[0]).getTime();
 			var end = createDate(day, times[day].split("-")[1]).getTime();
 			var content = createContent(course);
-			events.push(createEvent(course.subject + " " + course.number, start, end, colors[j], content, online));
+			events.push(createEvent(course.Subject + " " + course.Number, start, end, colors[j], content, online));
 		}
 	}
 	return events;
@@ -33,7 +33,7 @@ function updateEvents(indx) {
 
 /* Creates string for popover to display course info */
 function createContent(course) {
-	var res = course.title + ' - <b>Instructor:</b> ' + course.instructor + '<br /><b>Type:</b> ' + course.type + '<br /><b>Method:</b> ' + course.method + '<br /><b>Section:</b> ' + course.section + '<br /><b>Building:</b> ' + course.building + '<br /><b>Room:</b> ' + course.room + '<br /><b>CRN:</b> ' + course.crn + '<br /><b>Enroll:</b> ' + course.enroll + '/' + course.max_enroll + '<br /><b>Credits:</b> ' + course.credits;
+	var res = course.Title + ' - <b>Instructor:</b> ' + course.Instructor + '<br /><b>Type:</b> ' + course.Type + '<br /><b>Method:</b> ' + course.Method + '<br /><b>Section:</b> ' + course.Section + '<br /><b>Building:</b> ' + course.Building + '<br /><b>Room:</b> ' + course.Room + '<br /><b>CRN:</b> ' + course.CRN + '<br /><b>Enroll:</b> ' + course.Enroll + '/' + course.Max_Enroll + '<br /><b>Credits:</b> ' + course.Credits;
 	return res;
 }
 

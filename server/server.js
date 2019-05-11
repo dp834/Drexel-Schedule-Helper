@@ -188,7 +188,7 @@ app.post("/classes", (req, res)=>{
 
 	console.log(query);
 	pool.query(query, (err,rows,field)=>{
-		console.log(rows);
+		// console.log(rows);
 		if(err){
 			res.status("200");
 			console.log("Error with Query:" + query);
@@ -197,7 +197,7 @@ app.post("/classes", (req, res)=>{
 			return;
 		}
 		for(row in rows){
-			var pointer = map[removeQuotes(rows[row].Subject) + " " + removeQuotes(rows[row].number)];
+			var pointer = map[removeQuotes(rows[row].Subject) + " " + removeQuotes(rows[row].Number)];
 			console.log("POINTER: " + pointer);
 			if(pointer !== undefined){
 				coursesRes[pointer].push(rows[row]);
@@ -213,6 +213,7 @@ function addQuotes(str) {
 }
 
 function removeQuotes(str) {
+	console.log(str);
 	return str.substring(1, str.length-1);
 }
 

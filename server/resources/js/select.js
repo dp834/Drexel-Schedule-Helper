@@ -360,6 +360,8 @@ function findSchedules(){
   }
 
 
+   console.log({courses : classes, term : term});
+
   $.ajax({
     type: 'POST',
     url: 'classes',
@@ -369,6 +371,7 @@ function findSchedules(){
     success: (result) => {
       //start finding schedules dialog
       // $("#loader").toggle();
+      console.log(JSON.stringify(result));
       findAllSchedules(result, parsedRestrictions);
       //end finding schedules dialog
       $("#loader").toggle();
