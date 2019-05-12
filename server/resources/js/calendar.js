@@ -12,15 +12,17 @@ function updateEvents(indx) {
 		var times = parseTimes(course.Times);
 		var online = false;
 		/* If online class set class to show on Monday */
-		if (times['T'] == 'TBD') {
+		if (times['T'] == 'TBD' || "TBD" in times) {
 			times = {
 				'M': '12:00am-12:00pm'
 			};
 			online = true;
 		}
+		console.log(times);
 
 		/* Create event to display for each day and time */
 		for (day in times) {
+			console.log(times[day]);
 			var start = createDate(day, times[day].split("-")[0]).getTime();
 			var end = createDate(day, times[day].split("-")[1]).getTime();
 			var content = createContent(course);

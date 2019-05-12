@@ -141,7 +141,9 @@ function filterRestrictions(classes, restrictions) {
     for(let section of course){
       // console.log("---------------");
       let confict = false;
-      section.Times = JSON.parse(removeOuter(JSON.stringify(section.Times)).replace(/\\/g, ''));
+      if (JSON.stringify(section.Times).includes("\\")) {
+        section.Times = JSON.parse(removeOuter(JSON.stringify(section.Times)).replace(/\\/g, ''));
+      }
       for(let day in section.Times){
         // console.log(section.Times);
         for(let restriction of restrictions){
