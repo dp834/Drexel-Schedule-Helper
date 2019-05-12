@@ -32,7 +32,7 @@
   		<a class="navbar-brand" href="/index">Drexel Scheduler</a>
 		<ul class="navbar-nav ml-auto">
 			<li class="nav-item">
-				<a class="nav-link" href="/select">Create Schedule</a>
+				<a class="nav-link" href="#" onclick="showCourseSelect();event.preventDefault();">Create Schedule</a>
 			</li>
 			<li class="nav-item">
 				<a class="nav-link" href="/table">TMS</a>
@@ -43,6 +43,7 @@
 		</ul>
 	</nav>
 	<div id="loader" style="display: none;"></div>
+	<div id="content">
 	<br><br><br><br>
 		<div id="term-input-group" class="row">
 			<div class="col-md-3"></div>

@@ -172,10 +172,10 @@ function runAPI(){
 
   var jsonData = {};
 
-  if ($('#subjects-name').val() && $('#courses-name').val()) {
-    alert("Choose either a subject OR a course") 
-    return;
-  }
+  // if ($('#subjects-name').val() && $('#courses-name').val()) {
+  //   alert("Choose either a subject OR a course") 
+  //   return;
+  // }
 
 
   if (!(!$('#subjects-name').val())) jsonData.subject = $('#subjects-name').val().toLowerCase();
@@ -186,7 +186,7 @@ function runAPI(){
   if (!(!$('#methods-name').val())) jsonData.method = $('#methods-name').val();
   if (!(!$('#instructors-name').val())) jsonData.instructor = $('#instructors-name').val();
 
-  console.log(JSON.stringify(jsonData));
+  // console.log(JSON.stringify(jsonData));
 
   if (Object.keys(jsonData).length == 0) {
     alert("Please select a valid option");
@@ -198,7 +198,7 @@ function runAPI(){
     type: 'GET',
     data: jsonData,
     success: (rows) => {
-      console.log(rows);
+      // console.log(rows);
 
       // Stringify JSON to format
       var data = JSON.stringify(rows);

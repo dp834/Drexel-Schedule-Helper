@@ -181,7 +181,6 @@ app.get('/tms', function(req, res) {
 
 			let temp = replaceAll(rows);
 			res.json(temp);
-			// res.json(rows);
 			res.end();
 		});
 	}
@@ -237,7 +236,6 @@ app.post("/classes", (req, res)=>{
 	let map = {};
 	let counter = 0;
 	for(course in req.body.courses){
-		console.log(course);
 		map[req.body.courses[course]] = counter;
 		coursesRes[counter] = [];
 		counter++;
@@ -249,7 +247,6 @@ app.post("/classes", (req, res)=>{
 
 	console.log(query);
 	pool.query(query, (err,rows,field)=>{
-		// console.log(rows);
 		if(err){
 			res.status("200");
 			console.log("Error with Query:" + query);
@@ -259,7 +256,6 @@ app.post("/classes", (req, res)=>{
 		}
 		for(row in rows){
 			var pointer = map[removeQuotes(rows[row].Subject) + " " + removeQuotes(rows[row].Number)];
-			console.log("POINTER: " + pointer);
 			if(pointer !== undefined){
 				coursesRes[pointer].push(rows[row]);
 			}
@@ -290,7 +286,6 @@ app.get("/allTerms", (req,res)=>{
 			res.end();
 			return;
 		}
-		// res.json(rows);
 		let temp = replaceAll(rows);
 		res.json(temp);
 		res.end();
@@ -315,7 +310,6 @@ app.get("/allInstructors", (req,res)=>{
 			res.end();
 			return;
 		}
-		// res.json(rows);
 		let temp = replaceAll(rows);
 		res.json(temp);
 		res.end();
@@ -340,7 +334,6 @@ app.get("/allClasses", (req,res)=>{
 			res.end();
 			return;
 		}
-		// res.json(rows);
 		let temp = replaceAll(rows);
 		res.json(temp);
 		res.end();
@@ -356,49 +349,17 @@ app.get("/coursesFile", (req,res)=>{
 });
 
 
-async function lsExample() {
-  const { stdout, stderr } = await exec('cd server ; node ../scraper/scraper.js');
-  console.log('stdout:', stdout);
-  console.log('stderr:', stderr);
-}
-
 app.get("/runScraper", (req,res)=>{
-	// lsExample();
 	var exec1 = require('child_process').exec;
 	var scraperProcess = exec1('cd server ; node ../scraper/scraper.js');
-
 	scraperProcess.stdout.on('data', function(data) {
-			console.log(data); 
+		console.log(data); 
 	});
-
 	res.end();
-	// req.setTimeout(0); // Using this -> https://github.com/expressjs/express/issues/2174
-	// console.log("Calling runScraper");
-
-
-	// // const exec = require('child_process').exec;
-	// // const child = exec('ls', (error, stdout, stderr) => {
-	// //         console.log(`stdout: ${stdout}`);
-	// //         console.log(`stderr: ${stderr}`);
-	// //         if (error !== null) {
-	// //             console.log(`exec error: ${error}`);
-	// //         }
-	// // });
-
-
-	// const exec = require('child_process').exec;
-	// const child = exec('cd server ; node ../scraper/scraper.js', (error, stdout, stderr) => {
-	//         console.log(`stdout: ${stdout}`);
-	//         console.log(`stderr: ${stderr}`);
-	//         if (error !== null) {
-	//             console.log(`exec error: ${error}`);
-	//         }
-	// });
-
-
-	// console.log("Done scraper");
-	// res.end();
 });
+
+
+
 
 app.get("/pushDatabase",(req,res)=>{
 	req.setTimeout(0);
