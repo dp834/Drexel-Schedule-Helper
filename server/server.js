@@ -107,9 +107,12 @@ app.get("/feedback", (req,res)=>{
 
 
 app.get("/email", function(req, res){
+	let fromName = req.query.name;
 	let from = req.query.from;
 	let subject = req.query.subject;
 	let message = req.query.message;
+
+	message += "\n\n from\n-" + fromName;
 
 	if (!(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(from))) {
 		from = process.env.GMAIL_USER;
