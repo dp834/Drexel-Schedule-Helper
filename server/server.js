@@ -1,5 +1,5 @@
 #! /usr/bin/node
-//sets database properly if run localc vs server
+//sets database properly if run local vs server
 if(process.env.GOOGLE_HOST === undefined){
 	// require('dotenv').config();
 	let dotenv = require('dotenv');
@@ -7,6 +7,8 @@ if(process.env.GOOGLE_HOST === undefined){
 }
 //using express
 var express = require("express");
+
+let nodemailer = require('nodemailer');
 
 const util = require('util');
 const exec = util.promisify(require('child_process').exec);
@@ -25,6 +27,20 @@ app.use(bodyParser.json());
 
 //to get files on server
 var fs = require("fs");
+
+
+var stringify = require('json-stringify');
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+let transporter = nodemailer.createTransport({
+	service: 'Gmail',
+	host: 'smtp.gmail.com',
+	port:587,
+	secure: false,
+	auth: {
+	    user: process.env.GMAIL_USER,
+	    pass: process.env.GMAIL_PASS
+  	}
+});
 
 //connect to mysql database
 var mysql = require("mysql");
@@ -80,6 +96,42 @@ app.get("/table", (req,res)=>{
 app.get("/about", (req,res)=>{
 	res.write(fs.readFileSync(__dirname + "/resources/html/about.html"));
 	res.end();
+});
+
+//feedback page
+app.get("/feedback", (req,res)=>{
+	res.write(fs.readFileSync(__dirname + "/resources/html/feedback.html"));
+	res.end();
+});
+
+
+
+app.get("/email", function(req, res){
+	let from = req.query.from;
+	let subject = req.query.subject;
+	let message = req.query.message;
+
+	if (!(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(from))) {
+		from = process.env.GMAIL_USER;
+	}
+
+	from = 'des338@drexel.edu';
+
+	let mailOptions = {
+	  from: from,
+	  to: process.env.GMAIL_USER,
+	  subject: subject,
+	  text: message
+	};
+
+	transporter.sendMail(mailOptions, function(error, info){
+	  if (error) {
+	    console.log(error);
+	  } else {
+	    console.log('Email sent: ' + info.response);
+	  }
+	});
+	res.redirect('/index');
 });
 
 //api for getting term information
@@ -160,6 +212,12 @@ app.post("/render", (req,res)=>{
 			break;
 		case("table"):
 			res.write(fs.readFileSync(__dirname + "/resources/html/table.html"));
+			break;
+		case("about"):
+			res.write(fs.readFileSync(__dirname + "/resources/html/about.html"));
+			break;
+		case("feedback"):
+			res.write(fs.readFileSync(__dirname + "/resources/html/feedback.html"));
 			break;
 		default:
 			res.status(200);

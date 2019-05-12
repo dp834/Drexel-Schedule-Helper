@@ -18,6 +18,9 @@
 
     <!-- Custom styles for this template -->
     <link href="./resources/css/index.css" rel="stylesheet">
+    <!-- Add the stylesheet to the head -->
+    <link rel="stylesheet" type="text/css" href="./resources/js/clippy/build/clippy.css" media="all">
+
   </head>
 
   <body>
@@ -32,10 +35,9 @@
             <div class="inner">
               <h3 class="masthead-brand">Drexel Scheduler</h3>
               <nav class="nav nav-masthead">
-                <a class="nav-link active" href="/">Home</a>
                 <a class="nav-link" href='/select'>Create Schedule</a>
                 <a class="nav-link" href="/table">TMS</a>
-                <a class="nav-link" href="/about">About</a>
+                <a class="nav-link" href="/feedback">Feedback</a>
               </nav>
             </div>
           </div>
@@ -58,8 +60,30 @@
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+    <!-- <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script> -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
     <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+
+    <!-- Add these scripts to  the bottom of the page -->
+    <!-- Clippy.js -->
+    <script src="./resources/js/clippy/build/clippy.min.js"></script>
+
+    <!-- Init script -->
+    <script type="text/javascript">
+        clippy.load('Rover', function(agent) {
+            agent.show();
+            window.setInterval(function(){
+              agent.speak('Click me for help!');
+            }, 5000);
+              $('.clippy').hover(function(){
+                agent.play('Writing');
+              });
+              $('.clippy').click(function(){
+                window.location.href = "/about";
+              });
+        });
+
+    </script>
   </body>
 </html>

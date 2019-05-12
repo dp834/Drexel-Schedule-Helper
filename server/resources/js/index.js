@@ -2,7 +2,10 @@ $(document).ready(()=>{
 	/* Renders select page dynamically when button with id "createSchedule" is clicked */
 	$("#createSchedule-button").on("click",()=>{
 		sendPOSTRender("select");
-	})
+	});
+
+
+
 });
 
 
@@ -17,5 +20,6 @@ function sendPOSTRender(page){
 		error:(res)=>{
 			$("#inner cover").html(res);
 		}
-	})
+	});
 }
+
