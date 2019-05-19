@@ -112,6 +112,8 @@ app.get("/email", function(req, res){
 	let subject = req.query.subject;
 	let message = req.query.message;
 
+	console.log("Name: " + fromName + "\nFrom: " + from + "\nSubject: " + subject + "\nMessage: " + message);
+
 	message += "\n\n from\n-" + fromName + "\n-" + from;
 
 
@@ -119,7 +121,7 @@ app.get("/email", function(req, res){
 	  from: process.env.GMAIL_USER,
 	  to: process.env.GMAIL_USER,
 	  subject: subject,
-	  text: message+"\n\n"+from
+	  text: message
 	};
 
 	transporter.sendMail(mailOptions, function(error, info){
