@@ -112,19 +112,14 @@ app.get("/email", function(req, res){
 	let subject = req.query.subject;
 	let message = req.query.message;
 
-	message += "\n\n from\n-" + fromName;
+	message += "\n\n from\n-" + fromName + "\n-" + from;
 
-	if (!(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(from))) {
-		from = process.env.GMAIL_USER;
-	}
-
-	from = 'des338@drexel.edu';
 
 	let mailOptions = {
-	  from: from,
+	  from: process.env.GMAIL_USER,
 	  to: process.env.GMAIL_USER,
 	  subject: subject,
-	  text: message
+	  text: message+"\n\n"+from
 	};
 
 	transporter.sendMail(mailOptions, function(error, info){
