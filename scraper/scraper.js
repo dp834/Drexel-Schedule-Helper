@@ -30,7 +30,7 @@ const getTerms = new Promise((resolve, reject)=>{
 			return;
 		});
 		console.log("Success in getTerms()");
-		resolve(termList.slice(3,4));//0,4));//first 4 as they are the ones we care about ie current year
+		resolve(termList.slice(4,9));//0,4));//first 4 as they are the ones we care about ie current year
 	});
 });
 
@@ -178,11 +178,15 @@ function getCoursesFromLink(link){
 							var linkTemp = $(this).children('p').html();
 							var reg = /<a href=([^>]+)>((?:.(?!\<\/a\>))*.)<\/a>/g;
 							var match = reg.exec(linkTemp);
-							var final = match[1].replace(/&amp;/g, "&");
-							final = 'https://termmasterschedule.drexel.edu' + final;
-							final = final.replace(/"/g, '');
-							// HAS LINK TO COURSE BELOW
-							allLinks.push(final);
+							try {
+								var final = match[1].replace(/&amp;/g, "&");
+								final = 'https://termmasterschedule.drexel.edu' + final;
+								final = final.replace(/"/g, '');
+								// HAS LINK TO COURSE BELOW
+								allLinks.push(final);
+							} catch(err) {
+								console.log("Failed parsing " + final);
+							}
 						}
 						});
 				});
@@ -192,11 +196,15 @@ function getCoursesFromLink(link){
 							var linkTemp = $(this).children('p').html();
 							var reg = /<a href=([^>]+)>((?:.(?!\<\/a\>))*.)<\/a>/g;
 							var match = reg.exec(linkTemp);
-							var final = match[1].replace(/&amp;/g, "&");
-							final = 'https://termmasterschedule.drexel.edu' + final;
-							final = final.replace(/"/g, '');
-							// HAS LINK TO COURSE BELOW
-							allLinks.push(final);
+							try {
+								var final = match[1].replace(/&amp;/g, "&");
+								final = 'https://termmasterschedule.drexel.edu' + final;
+								final = final.replace(/"/g, '');
+								// HAS LINK TO COURSE BELOW
+								allLinks.push(final);
+							} catch(err) {
+								console.log("Failed parsing " + final);
+							}
 						}
 						});
 			    });
